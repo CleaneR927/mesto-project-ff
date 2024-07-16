@@ -14,14 +14,11 @@ const popupTypeImageCaption = popupTypeImage.querySelector('.popup__caption');
 
 // функция открытия изображения в модальном окне
 
-function openImagePopup(evt) {
-  if (evt.target.classList.contains('card__image')) {
-    const cardTitle = cardTepmlate.querySelector('.card__title');
-    popupImage.src = evt.target.src;
-    popupTypeImageCaption.textContent = cardTitle.alt;
-    console.log(cardTitle)
-    openModal(popupTypeImage);
-  };
+function openImagePopup(cardData) {
+  popupImage.src = cardData.link;
+  popupTypeImageCaption.textContent = cardData.name;
+  popupImage.alt = cardData.name;
+  openModal(popupTypeImage);
 };
 
 // @todo: Функция удаления карточки

@@ -15,7 +15,9 @@ function createCardFunction(cardData, openImagePopup, onDeleteCard, onLikeCard) 
   cardElement.querySelector('.card__title').textContent = cardData.name;
 
 
-  cardImage.addEventListener('click', openImagePopup);
+  cardImage.addEventListener('click', () => {
+    openImagePopup(cardData);
+  });
   deleteButton.addEventListener('click', onDeleteCard);
   likeButton.addEventListener('click', onLikeCard);
 
