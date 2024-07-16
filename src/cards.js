@@ -1,6 +1,3 @@
-import * as popupFunc from './modal.js';
-import { cardTepm, container, popupTypeImage, popupImage, popupCaption, popupImageClose, delCardFunc } from './index.js';
-
 const arkhyzImage = new URL('https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg', import.meta.url);
 const chelyabinsk_oblastImage = new URL('https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg', import.meta.url);
 const ivanovoImage = new URL('https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg', import.meta.url);
@@ -17,40 +14,4 @@ const initialCards = [
   { name: 'Байкал', link: baikalImage, alt: "Прибрежные зимние скалы озера 'Байкал'." },
 ]; 
 
-// @todo: Функция создания карточки
-
-function createCardFunc(element) {
-  const cardElem = cardTepm.querySelector('.card').cloneNode(true);
-  const imageAtr = cardElem.querySelector('img');
-  
-  imageAtr.src = element.link;
-  imageAtr.alt = element.alt;
-  cardElem.querySelector('.card__title').textContent = element.name;
-
-  // Обработчик открытия изображения на весь экран
-
-  container.addEventListener('click', (evt) => {
-    if (evt.target.classList.contains('card__image')) {
-      popupImage.src = evt.target.src;
-      popupImage.alt = evt.target.alt;
-      popupCaption.textContent = evt.target.alt;
-      popupFunc.openModal(popupTypeImage);
-    };
-  });
-
-  popupImageClose.addEventListener('click', () => {
-    popupFunc.closeModal(popupTypeImage);
-  });
-
-  cardElem.querySelector('.card__like-button').addEventListener('click', function() {
-    cardElem.querySelector('.card__like-button').classList.toggle('card__like-button_is-active');
-  });
-
-  cardElem.querySelector('.card__delete-button').addEventListener('click', function() {
-    delCardFunc(cardElem);
-  });
-
-  return cardElem;
-};
-
-export{ initialCards, createCardFunc };
+export{ initialCards };

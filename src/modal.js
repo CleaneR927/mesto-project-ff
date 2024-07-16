@@ -1,22 +1,23 @@
 // ФУНКЦИЯ открытия модального окна редактирования профиля
 
-const openModal = (evt) => {
-  evt.style.visibility = 'visible';
-  evt.style.opacity = 1;
+const openModal = (popupElement) => {
+  popupElement.classList.add('popup_is-opened');
+  document.addEventListener('keydown', closeEscPopup);
 };
 
 // ФУНКЦИЯ закрытия модального окна редактирования профиля
 
-const closeModal = (evt) => {
-  evt.style.visibility = 'hidden';
-  evt.style.opacity = 0;
+const closeModal = (popupElement) => {
+  popupElement.classList.remove('popup_is-opened');
+  document.removeEventListener('keydown', closeEscPopup);
 };
 
-// ФУНКЦИЯ обработчик события нажатия на Esc
-
-
-
-// ФУНКЦИЯ обработчик события клика по оверлею
-
+// ФУНКЦИЯ закрытия модального окна по Esc
+function closeEscPopup(evt) {
+  if (evt.key === 'Escape') {
+    const popup = document.querySelector('.popup_is-opened');
+    closeModal(popup);
+  }
+};
 
 export { openModal, closeModal };
