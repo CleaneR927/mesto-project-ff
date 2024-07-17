@@ -1,4 +1,4 @@
-import { cardTepmlate} from './index.js';
+import { cardTepmlate} from '../index.js';
 
 // @todo: Функция создания карточки
 

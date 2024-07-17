@@ -1,7 +1,7 @@
 import './pages/index.css';
-import { initialCards } from './cards.js';
-import { createCardFunction, onDeleteCard, onLikeCard } from './card.js';
-import { openModal, closeModal } from './modal.js';
+import { initialCards } from './components/cards.js';
+import { createCardFunction, onDeleteCard, onLikeCard } from './components/card.js';
+import { openModal, closeModal } from './components/modal.js';
 
   
 const cardTepmlate = document.querySelector('#card-template').content;
@@ -16,8 +16,8 @@ const popupTypeImageCaption = popupTypeImage.querySelector('.popup__caption');
 
 function openImagePopup(cardData) {
   popupImage.src = cardData.link;
+  popupImage.alt = cardData.alt;
   popupTypeImageCaption.textContent = cardData.name;
-  popupImage.alt = cardData.name;
   openModal(popupTypeImage);
 };
 
