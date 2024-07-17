@@ -1,6 +1,5 @@
 import { cardTepmlate} from './index.js';
 
-
 // @todo: Функция создания карточки
 
 function createCardFunction(cardData, openImagePopup, onDeleteCard, onLikeCard) {
@@ -24,4 +23,16 @@ function createCardFunction(cardData, openImagePopup, onDeleteCard, onLikeCard) 
   return cardElement;
 };
 
-export{ createCardFunction };
+// @todo: Функция удаления карточки
+
+function onDeleteCard(evt) {
+  evt.target.closest('.card').remove();
+};
+
+// @todo: Функция лайка
+
+function onLikeCard(evt) {
+  evt.target.classList.toggle('card__like-button_is-active');
+};
+
+export{ createCardFunction, onDeleteCard, onLikeCard };

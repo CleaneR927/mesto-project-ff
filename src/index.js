@@ -1,6 +1,6 @@
 import './pages/index.css';
 import { initialCards } from './cards.js';
-import { createCardFunction } from './card.js';
+import { createCardFunction, onDeleteCard, onLikeCard } from './card.js';
 import { openModal, closeModal } from './modal.js';
 
   
@@ -19,18 +19,6 @@ function openImagePopup(cardData) {
   popupTypeImageCaption.textContent = cardData.name;
   popupImage.alt = cardData.name;
   openModal(popupTypeImage);
-};
-
-// @todo: Функция удаления карточки
-
-function onDeleteCard(evt) {
-  evt.target.closest('.card').remove();
-};
-
-// @todo: Функция лайка
-
-function onLikeCard(evt) {
-  evt.target.classList.toggle('card__like-button_is-active');
 };
 
 // @todo: Вывести карточки на страницу
