@@ -13,5 +13,3 @@ const initialCards = [
   { name: 'Холмогорский район', link: kholmogorsky_rayonImage, alt: "Окруженная лесом, железная дорога Холмогорского района, уходящая в даль." },
   { name: 'Байкал', link: baikalImage, alt: "Прибрежные зимние скалы озера 'Байкал'." },
 ]; 
-
-export{ initialCards };

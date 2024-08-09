@@ -1,4 +1,5 @@
 .profile__image {
+  position: relative;
   width: 120px;
   height: 120px;
   -webkit-border-radius: 50%;
@@ -7,8 +8,16 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  -webkit-transition: .3s;
+  -moz-transition: .3s;
+  -ms-transition: .3s;
+  -o-transition: .3s;
+  transition: .3s;
 }
 
+.profile__image:hover {
+  cursor: pointer; 
+}
 @media screen and (max-width: 740px) {
   .profile__image {
     margin: 0 10px 0 0;
@@ -19,4 +28,53 @@
   .profile__image {
     margin-right: 0;
   }
+}
+
+.profile__image::after {
+  content: '';
+  position: absolute;
+  inset: calc(50% - 13px);
+  opacity: 0;
+  inline-size: 26px;
+  block-size: 26px;
+  background-image: url('../../../images/Vector.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  -webkit-transition: .3s;
+  -moz-transition: .3s;
+  -ms-transition: .3s;
+  -o-transition: .3s;
+  transition: .3s;
+}
+
+.profile__image:hover::after {
+  opacity: 1;
+  -webkit-transition: .3s;
+  -moz-transition: .3s;
+  -ms-transition: .3s;
+  -o-transition: .3s;
+  transition: .3s;
+}
+
+.profile__image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-color: black;
+  -webkit-transition: .3s;
+  -moz-transition: .3s;
+  -ms-transition: .3s;
+  -o-transition: .3s;
+  transition: .3s;
+}
+
+.profile__image:hover::before {
+  opacity: 0.8;
+  -webkit-transition: .3s;
+  -moz-transition: .3s;
+  -ms-transition: .3s;
+  -o-transition: .3s;
+  transition: .3s;
 }
