@@ -1,4 +1,4 @@
-const PATCH = 'https://nomoreparties.co/v1/wff-cohort-19';
+const baseUrl = 'https://nomoreparties.co/v1/wff-cohort-19';
 
 const handleResponse = (res) => {
   if (res.ok) {
@@ -11,7 +11,7 @@ const handleResponse = (res) => {
 // Запрос массива карточек от сервера
 
 export function requestServerCards() {
-  return fetch(PATCH + '/cards', {
+  return fetch(baseUrl + '/cards', {
     method: 'GET',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9'
@@ -23,7 +23,7 @@ export function requestServerCards() {
 // Запрос свои данных от сервера
 
 export function requestServerMainData() {
-  return fetch(PATCH + '/users/me', {
+  return fetch(baseUrl + '/users/me', {
     method: 'GET',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9'
@@ -35,7 +35,7 @@ export function requestServerMainData() {
 // Отправка данных профиля на сервер 
 
 export function profileEditSending(data) {
-  return fetch(PATCH + `/users/me`, {
+  return fetch(baseUrl + `/users/me`, {
     method: 'PATCH',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9',
@@ -52,7 +52,7 @@ export function profileEditSending(data) {
 // Отправка новой карточки на сервер
 
 export function addCardSending(data) {
-  return fetch(PATCH + '/cards', {
+  return fetch(baseUrl + '/cards', {
     method: 'POST',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9',
@@ -69,7 +69,7 @@ export function addCardSending(data) {
 // Удаление карточки с сервера
 
 export function deleteCard(data) {
-  return fetch(PATCH + `/cards/${data._id}`, {
+  return fetch(baseUrl + `/cards/${data._id}`, {
     method: 'DELETE',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9'
@@ -81,7 +81,7 @@ export function deleteCard(data) {
 // Отправка лайка на сервер 
 
 export function addLike(data) {
-  return fetch(PATCH + `/cards/${data._id}/likes`, {
+  return fetch(baseUrl + `/cards/${data._id}/likes`, {
     method: 'PUT',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9'
@@ -93,7 +93,7 @@ export function addLike(data) {
 // Удаление лайка с сервера
 
 export function deleteLike(data) {
-  return fetch(PATCH + `/cards/${data._id}/likes`, {
+  return fetch(baseUrl + `/cards/${data._id}/likes`, {
     method: 'DELETE',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9'
@@ -105,7 +105,7 @@ export function deleteLike(data) {
 // Загрузка аватара на сервер
 
 export function avatarEditSending(data) {
-  return fetch(PATCH + '/users/me/avatar', {
+  return fetch(baseUrl + '/users/me/avatar', {
     method: 'PATCH',
     headers: {
       authorization: 'bffcd4f6-b8de-45c0-9c98-c3c9144236d9',

@@ -1,8 +1,8 @@
 import './pages/index.css';
-import { createCardFunction, onLikeCard, onDeleteCard } from './components/card.js';
+import { createCardFunction, onLikeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 import { enableValidation, clearValidation, configForm } from './components/validation.js';
-import { requestServerCards, requestServerMainData, profileEditSending, addCardSending, avatarEditSending} from './components/api.js';
+import { requestServerCards, requestServerMainData, profileEditSending, addCardSending, avatarEditSending, deleteCard} from './components/api.js';
 
 export const cardTepmlate = document.querySelector('#card-template').content;
 const content = document.querySelector('.content');
@@ -28,7 +28,7 @@ const profileButtonAdd = document.querySelector('.profile__add-button');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
-export const popupDeleteCard = document.querySelector('.popup_delete_card');
+const popupDeleteCard = document.querySelector('.popup_delete_card');
 const popupDeleteCardButton = popupDeleteCard.querySelector('.popup__button');
 const popupDeleteCardClose = popupDeleteCard.querySelector('.popup__close');
 const popupTypeEditImage = document.querySelector('.popup_type_edit-image');
@@ -65,12 +65,26 @@ function openImagePopup(cardData) {
 
 // Функция открытия окна удаления карточки
 
-function deleteCardPopup(data, cardElement) {
+function deleteCardPopup(data, cardElement, onDeleteCard) {
   openModal(popupDeleteCard);
-  popupDeleteCardButton.addEventListener('click', () => {
-    onDeleteCard(data, cardElement);
-  });
+  onDeleteCard(data, cardElement, deleteCard, closeModal);
 }
+
+// @todo: Функция удаления карточки
+
+function onDeleteCard(data, cardElement, deleteCard, closeModal) {
+  popupDeleteCardButton.onclick = () => {
+    cardElement.remove();
+    requestServerCards() 
+      .then(() => {
+        deleteCard(data);
+      })
+      .catch((err) => {
+        console.log('Не вышло получить данные и удалить карточку'+ err);
+      });
+    closeModal(popupDeleteCard);
+  }
+};
 
 // Обработчик открытия окна редактирования профиля
 
@@ -147,18 +161,27 @@ popupTypeEditImage.addEventListener('mousedown', (evt) => {
 
 function profilePopupFormEditImageSending (evt) {
   evt.preventDefault();
-  renderLoading(true, profileEditImageButtonSave);
+  requestServerMainData() 
+    .then(() => {
+      renderLoading(true, profileEditButtonSave);
+    })
+    .catch((err) => {
+      console.log('Не вышло получить данные для сохранения'+ err);
+    })
   profileImage.style = `background-image: url(${profileEditImageLink.value})`;
   avatarEditSending ({
     avatar: profileEditImageLink.value
-  }).catch((err) => {
-    console.log('Не вышло получить данные'+ err);
   })
+    .then(() => {
+      closeModal(popupTypeEditImage);
+      profilePopupFormEditImage.reset();
+    })
+    .catch((err) => {
+    console.log('Не вышло получить данные'+ err);
+    })
     .finally(() => {
     renderLoading(false, profileEditImageButtonSave);
-  });
-  closeModal(popupTypeEditImage);
-  profilePopupFormEditImage.reset();
+    });
 };
 
 profilePopupFormEditImage.addEventListener('submit', profilePopupFormEditImageSending);
@@ -167,19 +190,28 @@ profilePopupFormEditImage.addEventListener('submit', profilePopupFormEditImageSe
 
 function profilePopupFormEditSending (evt) {
   evt.preventDefault();
-  renderLoading(true, profileEditButtonSave);
+  requestServerMainData() 
+    .then(() => {
+      renderLoading(true, profileEditButtonSave);
+    })
+    .catch((err) => {
+      console.log('Не вышло получить данные для сохранения'+ err);
+    })
   profileTitle.textContent = profileNameInput.value;
   profileDescription.textContent = profileDescriptionInput.value;
   profileEditSending({
     name: profileNameInput.value,
     about: profileDescriptionInput.value
-  }).catch((err) => {
-    console.log('Не вышло получить данные'+ err);
+  })
+    .then(() => {
+      closeModal(profilePopupEdit);
+    })
+    .catch((err) => {
+    console.log('Не вышло обновить данные профиля'+ err);
   })
     .finally(() => {
     renderLoading(false, profileEditButtonSave);
   })
-  closeModal(profilePopupEdit);
 };
 
 profilePopupFormEdit.addEventListener('submit', profilePopupFormEditSending);
@@ -188,76 +220,66 @@ profilePopupFormEdit.addEventListener('submit', profilePopupFormEditSending);
 
 function profilePopupFormAddSending (evt) {
   evt.preventDefault();
-  renderLoading(true, profileAddButtonSave);
+  requestServerCards() 
+    .then(() => {
+      renderLoading(true, profileEditButtonSave);
+    })
+    .catch((err) => {
+      console.log('Не вышло получить данные для сохранения'+ err);
+    })
   const cardArr = createCardFunction({
     name: profileAddCardName.value,
     link: profileAddCardLink.value
-  }, openImagePopup, onLikeCard, deleteCardPopup);
+  }, openImagePopup, onLikeCard, deleteCardPopup, onDeleteCard);
   addCardSending({
     name: profileAddCardName.value,
     link: profileAddCardLink.value
-  }).catch((err) => {
-    console.log('Не вышло получить данные'+ err);
   })
+    .then(() => {
+      container.prepend(cardArr);
+      closeModal(profilePopupAdd);
+      profilePopupFormAdd.reset();
+    })
+    .catch((err) => {
+    console.log('Не вышло получить данные'+ err);
+    })
     .finally(() => {
     renderLoading(false, profileAddButtonSave);
-  });
-  container.prepend(cardArr);
-  closeModal(profilePopupAdd);
-  profilePopupFormAdd.reset();
+    });
 };
 
 profilePopupFormAdd.addEventListener('submit', profilePopupFormAddSending);
 
 enableValidation(configForm);
 
-// Редкатирование личного профиля
-
-requestServerMainData()
-  .then((res) => {
-    profileTitle.textContent = res.name;
-    profileDescription.textContent = res.about;
-    profileImage.style = `background-image: url(${res.avatar})`;
-    profileImage.alt = res.name;
-  });
-
-// Запрос личного id
-
-export const requestMainId = requestServerMainData()
-  .then((res) => {
-    const userId = res._id;
-    return userId;
-  }) 
-  .catch((err) => {
-    console.log('Не вышло получить данные'+ err);
-  })
-
-// Вывод карточек с сервера на страницу 
-
-const requestCards = requestServerCards()
-  .then((res) => {
-    return res;
-  })
-  .catch((err) => {
-    console.log('Не вышло получить данные о карточках:'+ err);
-  })
-
-Promise.all([requestMainId, requestCards])
+Promise.all([
+  requestServerMainData() // Запрос личных данных пользователя
+    .then((res) => {
+      profileTitle.textContent = res.name;
+      profileDescription.textContent = res.about;
+      profileImage.style = `background-image: url(${res.avatar})`;
+      profileImage.alt = res.name;
+      const userId = res._id;
+      return userId;
+    }) 
+    .catch((err) => {
+      console.log('Не вышло получить данные о пользователе'+ err);
+    }), 
+  requestServerCards() // Запрос карточек с сервера
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.log('Не вышло получить данные о карточках:'+ err);
+    })
+])
   .then((values) => {
     values[1].forEach(function createArrCards(cardData) {
-      const mainId = values[0];
-      const cardArr = createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, mainId);
+      const userId = values[0];
+      const cardArr = createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, onDeleteCard, userId);
       const cardLikeCount = cardArr.querySelector('.card__like-count');
       cardLikeCount.textContent = cardData.likes.length;
       container.append(cardArr);
-      if (cardData.owner._id !== mainId) {
-        cardArr.querySelector('.card__delete-button').classList.add('card__delete-button_novisible');
-      }
-      if (cardData.likes.some(like => like._id === mainId)) {
-        cardArr.querySelector('.card__like-button').classList.add('card__like-button_is-active');
-      } else {
-        cardArr.querySelector('.card__like-button').classList.remove('card__like-button_is-active');
-      }
     })
   })
   .catch((err) => {
