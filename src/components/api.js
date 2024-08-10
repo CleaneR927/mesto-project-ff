@@ -34,7 +34,7 @@ export function requestServerMainData() {
 
 // Отправка данных профиля на сервер 
 
-export function profileEditSending(data) {
+export function editProfileSending(data) {
   return fetch(baseUrl + `/users/me`, {
     method: 'PATCH',
     headers: {
@@ -68,7 +68,7 @@ export function addCardSending(data) {
 
 // Удаление карточки с сервера
 
-export function deleteCard(data) {
+export function deleteCardSending(data) {
   return fetch(baseUrl + `/cards/${data._id}`, {
     method: 'DELETE',
     headers: {
@@ -80,7 +80,7 @@ export function deleteCard(data) {
 
 // Отправка лайка на сервер 
 
-export function addLike(data) {
+export function addLikeSending(data) {
   return fetch(baseUrl + `/cards/${data._id}/likes`, {
     method: 'PUT',
     headers: {
@@ -92,7 +92,7 @@ export function addLike(data) {
 
 // Удаление лайка с сервера
 
-export function deleteLike(data) {
+export function deleteLikeSending(data) {
   return fetch(baseUrl + `/cards/${data._id}/likes`, {
     method: 'DELETE',
     headers: {
@@ -104,7 +104,7 @@ export function deleteLike(data) {
 
 // Загрузка аватара на сервер
 
-export function avatarEditSending(data) {
+export function editAvatarSending(data) {
   return fetch(baseUrl + '/users/me/avatar', {
     method: 'PATCH',
     headers: {

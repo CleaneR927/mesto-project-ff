@@ -2,7 +2,7 @@ import './pages/index.css';
 import { createCardFunction, onLikeCard } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 import { enableValidation, clearValidation, configForm } from './components/validation.js';
-import { requestServerCards, requestServerMainData, profileEditSending, addCardSending, avatarEditSending, deleteCard} from './components/api.js';
+import { requestServerCards, requestServerMainData, editProfileSending, addCardSending, editAvatarSending, deleteCardSending} from './components/api.js';
 
 export const cardTepmlate = document.querySelector('#card-template').content;
 const content = document.querySelector('.content');
@@ -65,14 +65,14 @@ function openImagePopup(cardData) {
 
 // Функция открытия окна удаления карточки
 
-function deleteCardPopup(data, cardElement, onDeleteCard) {
+function deleteCardPopup(data, cardElement, openDeleteCardPopup) {
   openModal(popupDeleteCard);
-  onDeleteCard(data, cardElement, deleteCard, closeModal);
+  openDeleteCardPopup(data, cardElement, deleteCardSending, closeModal);
 }
 
 // @todo: Функция удаления карточки
 
-function onDeleteCard(data, cardElement, deleteCard, closeModal) {
+function openDeleteCardPopup(data, cardElement, deleteCard, closeModal) {
   popupDeleteCardButton.onclick = () => {
     cardElement.remove();
     requestServerCards() 
@@ -159,20 +159,14 @@ popupTypeEditImage.addEventListener('mousedown', (evt) => {
 
 // Функция отправки нового изображения профиля 
 
-function profilePopupFormEditImageSending (evt) {
+function sendingEditImage(evt) {
   evt.preventDefault();
-  requestServerMainData() 
-    .then(() => {
-      renderLoading(true, profileEditButtonSave);
-    })
-    .catch((err) => {
-      console.log('Не вышло получить данные для сохранения'+ err);
-    })
-  profileImage.style = `background-image: url(${profileEditImageLink.value})`;
-  avatarEditSending ({
+  renderLoading(true, profileEditImageButtonSave);
+  editAvatarSending ({
     avatar: profileEditImageLink.value
   })
-    .then(() => {
+    .then((res) => {
+      profileImage.style = `background-image: url(${res.avatar})`;
       closeModal(popupTypeEditImage);
       profilePopupFormEditImage.reset();
     })
@@ -184,26 +178,20 @@ function profilePopupFormEditImageSending (evt) {
     });
 };
 
-profilePopupFormEditImage.addEventListener('submit', profilePopupFormEditImageSending);
+profilePopupFormEditImage.addEventListener('submit', sendingEditImage);
 
 // Функция отправки формы редактирования профиля
 
-function profilePopupFormEditSending (evt) {
+function sendingEditProfile (evt) {
   evt.preventDefault();
-  requestServerMainData() 
-    .then(() => {
-      renderLoading(true, profileEditButtonSave);
-    })
-    .catch((err) => {
-      console.log('Не вышло получить данные для сохранения'+ err);
-    })
-  profileTitle.textContent = profileNameInput.value;
-  profileDescription.textContent = profileDescriptionInput.value;
-  profileEditSending({
+  renderLoading(true, profileEditButtonSave);
+  editProfileSending({
     name: profileNameInput.value,
     about: profileDescriptionInput.value
   })
-    .then(() => {
+    .then((res) => {
+      profileTitle.textContent = res.name;
+      profileDescription.textContent = res.about;
       closeModal(profilePopupEdit);
     })
     .catch((err) => {
@@ -214,29 +202,22 @@ function profilePopupFormEditSending (evt) {
   })
 };
 
-profilePopupFormEdit.addEventListener('submit', profilePopupFormEditSending);
+profilePopupFormEdit.addEventListener('submit', sendingEditProfile);
 
 // Функция отправки формы создания карточки
 
-function profilePopupFormAddSending (evt) {
+function sendingAddCard (evt) {
   evt.preventDefault();
-  requestServerCards() 
-    .then(() => {
-      renderLoading(true, profileEditButtonSave);
-    })
-    .catch((err) => {
-      console.log('Не вышло получить данные для сохранения'+ err);
-    })
-  const cardArr = createCardFunction({
-    name: profileAddCardName.value,
-    link: profileAddCardLink.value
-  }, openImagePopup, onLikeCard, deleteCardPopup, onDeleteCard);
+  renderLoading(true, profileAddButtonSave);
   addCardSending({
     name: profileAddCardName.value,
     link: profileAddCardLink.value
   })
-    .then(() => {
-      container.prepend(cardArr);
+    .then((res) => {
+      const cardData = res;
+      const userId = res.owner._id;
+      const createCard = createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, openDeleteCardPopup, userId);
+      container.prepend(createCard);
       closeModal(profilePopupAdd);
       profilePopupFormAdd.reset();
     })
@@ -248,7 +229,7 @@ function profilePopupFormAddSending (evt) {
     });
 };
 
-profilePopupFormAdd.addEventListener('submit', profilePopupFormAddSending);
+profilePopupFormAdd.addEventListener('submit', sendingAddCard);
 
 enableValidation(configForm);
 
@@ -276,7 +257,7 @@ Promise.all([
   .then((values) => {
     values[1].forEach(function createArrCards(cardData) {
       const userId = values[0];
-      const cardArr = createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, onDeleteCard, userId);
+      const cardArr = createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, openDeleteCardPopup, userId);
       const cardLikeCount = cardArr.querySelector('.card__like-count');
       cardLikeCount.textContent = cardData.likes.length;
       container.append(cardArr);
