@@ -80,7 +80,7 @@ export function deleteCardSending(data) {
 
 // Отправка лайка на сервер 
 
-export function addLikeSending(data) {
+export function sendingAddLike(data) {
   return fetch(baseUrl + `/cards/${data._id}/likes`, {
     method: 'PUT',
     headers: {
@@ -92,7 +92,7 @@ export function addLikeSending(data) {
 
 // Удаление лайка с сервера
 
-export function deleteLikeSending(data) {
+export function sendingDeleteLike(data) {
   return fetch(baseUrl + `/cards/${data._id}/likes`, {
     method: 'DELETE',
     headers: {

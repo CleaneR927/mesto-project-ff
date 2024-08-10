@@ -1,5 +1,5 @@
 import { cardTepmlate} from '../index.js';
-import { addLikeSending, deleteLikeSending } from './api.js';
+import { sendingAddLike, sendingDeleteLike } from './api.js';
 
 // @todo: Функция создания карточки
 
@@ -55,7 +55,7 @@ function onLikeCard(cardData, cardLikeCount, likeButton, userId) {
 // Функция добавления лайка карточке
 
 function likeAdd(cardData, cardLikeCount, userId) {
-  addLikeSending(cardData)
+  sendingAddLike(cardData)
     .then((res) => {
       if (res.likes.some(like => like._id === userId)) {
         cardLikeCount.textContent = res.likes.length;
@@ -71,7 +71,7 @@ function likeAdd(cardData, cardLikeCount, userId) {
 // Функция удаления лайка с карточки
 
 function likeDelete(cardData, cardLikeCount, userId) {
-  deleteLikeSending(cardData)
+  sendingDeleteLike(cardData)
     .then((res) => {
       if (!res.likes.some(like => like._id === userId)) {
         cardLikeCount.textContent = res.likes.length;
