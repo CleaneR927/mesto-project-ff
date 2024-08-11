@@ -3,7 +3,7 @@ import { sendingAddLike, sendingDeleteLike } from './api.js';
 
 // @todo: Функция создания карточки
 
-function createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, onDeleteCard, userId) {
+function createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, openDeleteCardPopup, userId) {
   const cardElement = cardTepmlate.querySelector('.card').cloneNode(true);
   const cardDeleteIcon = cardElement.querySelector('.card__delete-button');
   const likeButton = cardElement.querySelector('.card__like-button');
@@ -30,11 +30,11 @@ function createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopu
   });
   
   cardDeleteIcon.addEventListener('click', () => {
-    deleteCardPopup(cardData, cardElement, onDeleteCard);
+    openDeleteCardPopup(cardData, cardElement, deleteCardPopup);
   });
 
   likeButton.addEventListener('click', () => {
-    onLikeCard(cardData, cardLikeCount, likeButton, userId);
+    onLikeCard(cardData, cardLikeCount, likeButton);
   });
 
   return cardElement;
@@ -42,26 +42,27 @@ function createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopu
 
 // @todo: Функция лайка
 
-function onLikeCard(cardData, cardLikeCount, likeButton, userId) {
-  likeButton.classList.toggle('card__like-button_is-active');
-
-  if (likeButton.classList.contains('card__like-button_is-active')) {
-    likeAdd(cardData, cardLikeCount, userId);
-  } else {
-    likeDelete(cardData, cardLikeCount, userId);
-  }
+function onLikeCard(cardData, cardLikeCount, likeButton) {
+  sendingAddLike(cardData)
+    .then(() => {
+      likeButton.classList.toggle('card__like-button_is-active');
+      if (likeButton.classList.contains('card__like-button_is-active')) {
+        likeAdd(cardData, cardLikeCount);
+      } else {
+        likeDelete(cardData, cardLikeCount);
+      }
+    })
+    .catch((err) => {
+      console.log('Не вышло добавить лайк'+ err);
+    });
 };
 
 // Функция добавления лайка карточке
 
-function likeAdd(cardData, cardLikeCount, userId) {
+function likeAdd(cardData, cardLikeCount) {
   sendingAddLike(cardData)
     .then((res) => {
-      if (res.likes.some(like => like._id === userId)) {
-        cardLikeCount.textContent = res.likes.length;
-      } else {
-        cardLikeCount.textContent = res.likes.length + 1;
-      } 
+      cardLikeCount.textContent = res.likes.length;
     })
     .catch((err) => {
       console.log('Не вышло добавить лайк'+ err);
@@ -70,14 +71,10 @@ function likeAdd(cardData, cardLikeCount, userId) {
 
 // Функция удаления лайка с карточки
 
-function likeDelete(cardData, cardLikeCount, userId) {
+function likeDelete(cardData, cardLikeCount) {
   sendingDeleteLike(cardData)
     .then((res) => {
-      if (!res.likes.some(like => like._id === userId)) {
-        cardLikeCount.textContent = res.likes.length;
-      } else {
-        cardLikeCount.textContent = res.likes.length - 1;
-      }
+      cardLikeCount.textContent = res.likes.length;
     })
     .catch((err) => {
       console.log('Не вышло удалить лайк'+ err);

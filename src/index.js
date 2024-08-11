@@ -65,24 +65,23 @@ function openImagePopup(cardData) {
 
 // Функция открытия окна удаления карточки
 
-function deleteCardPopup(data, cardElement, openDeleteCardPopup) {
+function openDeleteCardPopup(data, cardElement, deleteCardPopup) {
   openModal(popupDeleteCard);
-  openDeleteCardPopup(data, cardElement, deleteCardSending, closeModal);
+  deleteCardPopup(data, cardElement, deleteCardSending, closeModal);
 }
-
 // @todo: Функция удаления карточки
 
-function openDeleteCardPopup(data, cardElement, deleteCard, closeModal) {
+function deleteCardPopup(data, cardElement, deleteCard, closeModal) {
   popupDeleteCardButton.onclick = () => {
-    cardElement.remove();
     requestServerCards() 
       .then(() => {
+        cardElement.remove();
+        closeModal(popupDeleteCard);
         deleteCard(data);
       })
       .catch((err) => {
         console.log('Не вышло получить данные и удалить карточку'+ err);
       });
-    closeModal(popupDeleteCard);
   }
 };
 
@@ -234,29 +233,16 @@ profilePopupFormAdd.addEventListener('submit', sendingAddCard);
 enableValidation(configForm);
 
 Promise.all([
-  requestServerMainData() // Запрос личных данных пользователя
-    .then((res) => {
-      profileTitle.textContent = res.name;
-      profileDescription.textContent = res.about;
-      profileImage.style = `background-image: url(${res.avatar})`;
-      profileImage.alt = res.name;
-      const userId = res._id;
-      return userId;
-    }) 
-    .catch((err) => {
-      console.log('Не вышло получить данные о пользователе'+ err);
-    }), 
+  requestServerMainData(), // Запрос личных данных пользователя
   requestServerCards() // Запрос карточек с сервера
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => {
-      console.log('Не вышло получить данные о карточках:'+ err);
-    })
 ])
   .then((values) => {
+    profileTitle.textContent = values[0].name;
+    profileDescription.textContent = values[0].about;
+    profileImage.style = `background-image: url(${values[0].avatar})`;
+    profileImage.alt = values[0].name;
+    const userId = values[0]._id;
     values[1].forEach(function createArrCards(cardData) {
-      const userId = values[0];
       const cardArr = createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopup, openDeleteCardPopup, userId);
       const cardLikeCount = cardArr.querySelector('.card__like-count');
       cardLikeCount.textContent = cardData.likes.length;
