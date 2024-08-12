@@ -34,7 +34,7 @@ function createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopu
   });
 
   likeButton.addEventListener('click', () => {
-    onLikeCard(cardData, cardLikeCount, likeButton);
+    onLikeCard(cardData, cardLikeCount, likeButton, userId);
   });
 
   return cardElement;
@@ -42,43 +42,42 @@ function createCardFunction(cardData, openImagePopup, onLikeCard, deleteCardPopu
 
 // @todo: Функция лайка
 
-function onLikeCard(cardData, cardLikeCount, likeButton) {
-  sendingAddLike(cardData)
-    .then(() => {
-      likeButton.classList.toggle('card__like-button_is-active');
-      if (likeButton.classList.contains('card__like-button_is-active')) {
-        likeAdd(cardData, cardLikeCount);
-      } else {
-        likeDelete(cardData, cardLikeCount);
-      }
-    })
-    .catch((err) => {
-      console.log('Не вышло добавить лайк'+ err);
-    });
+function onLikeCard(cardData, cardLikeCount, likeButton, userId) {
+  if (!likeButton.classList.contains('card__like-button_is-active')) {
+    likeAdd(cardData, cardLikeCount, likeButton, userId);
+  } else {
+    likeDelete(cardData, cardLikeCount, likeButton, userId);
+  }
 };
 
 // Функция добавления лайка карточке
 
-function likeAdd(cardData, cardLikeCount) {
-  sendingAddLike(cardData)
-    .then((res) => {
-      cardLikeCount.textContent = res.likes.length;
-    })
-    .catch((err) => {
-      console.log('Не вышло добавить лайк'+ err);
+function likeAdd(cardData, cardLikeCount, likeButton, userId) { 
+  sendingAddLike(cardData) 
+    .then((res) => { 
+      likeButton.classList.toggle('card__like-button_is-active');
+      if (res.likes.some(like => like._id === userId)) { 
+        cardLikeCount.textContent = res.likes.length; 
+      }
+    }) 
+    .catch((err) => { 
+      console.log('Не вышло добавить лайк'+ err); 
     });
-};
+}; 
 
 // Функция удаления лайка с карточки
 
-function likeDelete(cardData, cardLikeCount) {
-  sendingDeleteLike(cardData)
-    .then((res) => {
-      cardLikeCount.textContent = res.likes.length;
-    })
-    .catch((err) => {
-      console.log('Не вышло удалить лайк'+ err);
-    });
-};
+function likeDelete(cardData, cardLikeCount, likeButton, userId) { 
+  sendingDeleteLike(cardData) 
+    .then((res) => { 
+      likeButton.classList.toggle('card__like-button_is-active');
+      if (!res.likes.some(like => like._id === userId)) { 
+        cardLikeCount.textContent = res.likes.length; 
+      }
+    }) 
+    .catch((err) => { 
+      console.log('Не вышло удалить лайк'+ err); 
+    }); 
+}; 
 
 export{ createCardFunction, onLikeCard };
